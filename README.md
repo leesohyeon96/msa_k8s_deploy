@@ -1,407 +1,191 @@
 # MSA K8s Deploy Template
 
-A comprehensive MSA template project using Kotlin + Spring Boot + Testcontainers + Docker + Kubernetes.
-
-## 🏗️ Project Structure
-
-```
-local_msa_minikube_deploy/
-├── product-service/          # Product Service
-├── order-service/           # Order Service  
-├── payment-service/         # Payment Service
-├── k8s/                     # Kubernetes Manifests
-│   ├── product-deployment.yaml
-│   ├── order-deployment.yaml
-│   ├── payment-deployment.yaml
-│   ├── service.yaml
-│   └── ingress.yaml
-└── README.md
-```
-
-## 🚀 Tech Stack
-
-- **Language**: Kotlin 1.9.25
-- **Framework**: Spring Boot 3.4.10
-- **Java**: OpenJDK 21
-- **Build Tool**: Gradle 8.x
-- **Testing**: Testcontainers (Redis)
-- **Container**: Docker
-- **Orchestration**: Kubernetes
-
-## 📋 Service Features
-
-### Product Service
-- Product information management
-- Port: 8080
-
-### Order Service  
-- Order processing
-- Port: 8080
-
-### Payment Service
-- Payment processing
-- Port: 8080
-
-## 🛠️ Development Setup
-
-### 1. Project Build
-```bash
-./gradlew build
-```
-
-### 2. Individual Service Execution
-```bash
-# Product Service
-./gradlew :product-service:bootRun
-
-# Order Service  
-./gradlew :order-service:bootRun
-
-# Payment Service
-./gradlew :payment-service:bootRun
-```
-
-### 3. Test Execution
-```bash
-# All tests
-./gradlew test
-
-# Individual service tests
-./gradlew :product-service:test
-./gradlew :order-service:test
-./gradlew :payment-service:test
-```
-
-## 🐳 Docker Build & Run
-
-### 1. Docker Image Build
-```bash
-# Product Service
-cd product-service
-docker build -t your-dockerhub-username/product:latest .
-
-# Order Service
-cd order-service  
-docker build -t your-dockerhub-username/order:latest .
-
-# Payment Service
-cd payment-service
-docker build -t your-dockerhub-username/payment:latest .
-```
-
-### 2. Docker Compose Run (Optional)
-```bash
-docker-compose up -d
-```
-
-## ☸️ Kubernetes Deployment
-
-### 1. Cluster Setup
-```bash
-# Start Minikube
-minikube start
-
-# Or Kind cluster
-kind create cluster --name msa-cluster
-```
-
-### 2. Apply Manifests
-```bash
-# Deploy all services
-kubectl apply -f k8s/
-
-# Deploy individual services
-kubectl apply -f k8s/product-deployment.yaml
-kubectl apply -f k8s/order-deployment.yaml
-kubectl apply -f k8s/payment-deployment.yaml
-kubectl apply -f k8s/service.yaml
-kubectl apply -f k8s/ingress.yaml
-```
-
-### 3. Service Verification
-```bash
-# Check Pod status
-kubectl get pods
-
-# Check services
-kubectl get services
-
-# Check ingress
-kubectl get ingress
-```
-
-### 4. Local Access (Minikube)
-```bash
-# Get Minikube IP
-minikube ip
-
-# Enable ingress
-minikube addons enable ingress
-
-# Add to /etc/hosts
-echo "$(minikube ip) msa.local" | sudo tee -a /etc/hosts
-```
-
-## 🧪 Testcontainers Testing
-
-Each service includes Testcontainers tests using Redis containers.
-
-```bash
-# Run Testcontainers tests
-./gradlew :product-service:test --tests "*ContainerTest"
-```
-
-## 🔧 CI/CD Ready
-
-This template is ready for the following CI/CD pipelines:
-
-- **GitHub Actions**
-- **GitLab CI**  
-- **Jenkins**
-- **Azure DevOps**
-
-### GitHub Actions Example
-```yaml
-name: Build and Deploy
-on: [push]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 21
-      uses: actions/setup-java@v3
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-    - name: Build
-      run: ./gradlew build
-    - name: Test
-      run: ./gradlew test
-```
-
-## 📝 Key Features
-
-- ✅ **Multi-Module Gradle** structure
-- ✅ **Kotlin + Spring Boot** latest version
-- ✅ **Testcontainers** integration testing
-- ✅ **Docker** containerization
-- ✅ **Kubernetes** orchestration
-- ✅ **CI/CD** ready
-- ✅ **MSA** architecture
-
-## 🎯 Use Cases
-
-This template can be used for:
-
-- MSA architecture learning
-- Kubernetes deployment practice
-- DevOps pipeline construction
-- Portfolio projects
-- CI/CD practice
-
----
-
-# MSA K8s Deploy 템플릿
-
 Kotlin + Spring Boot + Testcontainers + Docker + Kubernetes를 활용한 MSA 템플릿 프로젝트입니다.
 
-## 🏗️ 프로젝트 구조
+> 상세 실행 가이드는 [GETTING_STARTED_v1.0.md](./GETTING_STARTED_v1.0.md)를 참고하세요.
+
+## 기술 스택
+
+| 항목 | 버전 |
+|------|------|
+| Language | Kotlin 1.9.25 |
+| Framework | Spring Boot 3.4.10 |
+| Java | OpenJDK 21 |
+| Build | Gradle 8.x (Multi-Module) |
+| Testing | Testcontainers 1.20.3 (Redis) |
+| Container | Docker |
+| Orchestration | Kubernetes (Minikube) |
+
+## 프로젝트 구조
 
 ```
 local_msa_minikube_deploy/
-├── product-service/          # 상품 서비스
-├── order-service/           # 주문 서비스  
-├── payment-service/         # 결제 서비스
-├── k8s/                     # Kubernetes 매니페스트
+├── product-service/              # 상품 서비스 (host: 8081)
+│   ├── src/
+│   └── Dockerfile
+├── order-service/                # 주문 서비스 (host: 8082)
+│   ├── src/
+│   └── Dockerfile
+├── payment-service/              # 결제 서비스 (host: 8083)
+│   ├── src/
+│   └── Dockerfile
+├── k8s/                          # Kubernetes 매니페스트
 │   ├── product-deployment.yaml
 │   ├── order-deployment.yaml
 │   ├── payment-deployment.yaml
-│   ├── service.yaml
-│   └── ingress.yaml
-└── README.md
+│   ├── service.yaml              # ClusterIP 서비스 3개
+│   └── ingress.yaml              # msa.local 진입점
+├── docker-compose.yml
+├── build.gradle.kts              # 루트 공통 설정
+├── settings.gradle.kts
+└── GETTING_STARTED_v1.0.md       # 단계별 실행 가이드
 ```
 
-## 🚀 기술 스택
+## API 엔드포인트
 
-- **Language**: Kotlin 1.9.25
-- **Framework**: Spring Boot 3.4.10
-- **Java**: OpenJDK 21
-- **Build Tool**: Gradle 8.x
-- **Testing**: Testcontainers (Redis)
-- **Container**: Docker
-- **Orchestration**: Kubernetes
+모든 서비스는 동일한 구조로 구현되어 있습니다.
 
-## 📋 서비스별 기능
+| Method | Path | 설명 |
+|--------|------|------|
+| GET | `/` | 서비스 상태 메시지 |
+| GET | `/products` `/orders` `/payments` | 목록 조회 |
+| GET | `/health` | 헬스체크 |
 
-### Product Service
-- 상품 정보 관리
-- 포트: 8080
+## 아키텍처
 
-### Order Service  
-- 주문 처리
-- 포트: 8080
+```mermaid
+flowchart TD
+    Dev["🖥️ 내 맥북\n(kubectl / curl)"]
 
-### Payment Service
-- 결제 처리
-- 포트: 8080
+    subgraph Minikube["Minikube (가상 Linux VM)"]
+        subgraph K8s["Kubernetes 클러스터"]
+            Ingress["Ingress\nmsa.local"]
 
-## 🛠️ 개발 환경 설정
+            subgraph Svc["Services (ClusterIP)"]
+                PS["product-service :80"]
+                OS["order-service :80"]
+                PAS["payment-service :80"]
+            end
 
-### 1. 프로젝트 빌드
+            subgraph Pods["Pods"]
+                PP["Pod\nproduct :8080"]
+                OP["Pod\norder :8080"]
+                PAP["Pod\npayment :8080"]
+            end
+        end
+    end
+
+    Dev -->|"curl http://msa.local/product"| Ingress
+    Ingress -->|"/product"| PS
+    Ingress -->|"/order"| OS
+    Ingress -->|"/payment"| PAS
+    PS --> PP
+    OS --> OP
+    PAS --> PAP
+```
+
+> **Ingress** — 외부 요청을 받는 라우터 (msa.local 도메인)  
+> **Service** — Pod 앞단의 고정 주소 (Pod IP가 바뀌어도 서비스 이름은 유지)  
+> **Pod** — Spring Boot 앱이 실제로 돌아가는 컨테이너 단위
+
+## 실행 방법
+
+### Level 1 — 로컬 직접 실행
+
 ```bash
-./gradlew build
+# 빌드 (테스트 제외)
+./gradlew clean build -x test
+
+# 각 터미널에서 개별 실행
+./gradlew :product-service:bootRun --args='--server.port=8081'
+./gradlew :order-service:bootRun --args='--server.port=8082'
+./gradlew :payment-service:bootRun --args='--server.port=8083'
 ```
 
-### 2. 개별 서비스 실행
+접속 확인:
 ```bash
-# Product Service
-./gradlew :product-service:bootRun
-
-# Order Service  
-./gradlew :order-service:bootRun
-
-# Payment Service
-./gradlew :payment-service:bootRun
+curl http://localhost:8081/products
+curl http://localhost:8082/orders
+curl http://localhost:8083/payments
 ```
 
-### 3. 테스트 실행
+### Level 2 — Testcontainers 테스트
+
+Docker Desktop이 실행 중이어야 합니다.
+
 ```bash
 # 전체 테스트
 ./gradlew test
 
-# 개별 서비스 테스트
-./gradlew :product-service:test
-./gradlew :order-service:test
-./gradlew :payment-service:test
+# Testcontainers 테스트만
+./gradlew :product-service:test --tests "*ContainerTest"
+./gradlew :order-service:test --tests "*ContainerTest"
+./gradlew :payment-service:test --tests "*ContainerTest"
 ```
 
-## 🐳 Docker 빌드 및 실행
+### Level 3 — Docker Compose
 
-### 1. Docker 이미지 빌드
 ```bash
-# Product Service
-cd product-service
-docker build -t your-dockerhub-username/product:latest .
-
-# Order Service
-cd order-service  
-docker build -t your-dockerhub-username/order:latest .
-
-# Payment Service
-cd payment-service
-docker build -t your-dockerhub-username/payment:latest .
-```
-
-### 2. Docker Compose 실행 (선택사항)
-```bash
+# 이미지 빌드 후 실행 (product: 8081, order: 8082, payment: 8083)
 docker-compose up -d
+
+# 로그 확인
+docker-compose logs -f
+
+# 정리
+docker-compose down
 ```
 
-## ☸️ Kubernetes 배포
+### Level 4 — Kubernetes (Minikube)
 
-### 1. 클러스터 준비
 ```bash
-# Minikube 시작
+# 1. Minikube 시작 및 ingress 활성화
 minikube start
+minikube addons enable ingress
 
-# 또는 Kind 클러스터
-kind create cluster --name msa-cluster
-```
+# 2. Minikube 내부 Docker 환경으로 전환
+eval $(minikube docker-env)
 
-### 2. 매니페스트 적용
-```bash
-# 모든 서비스 배포
+# 3. 각 서비스 JAR 빌드 후 이미지 빌드
+./gradlew :product-service:bootJar
+./gradlew :order-service:bootJar
+./gradlew :payment-service:bootJar
+
+cd product-service && docker build -t product:latest . && cd ..
+cd order-service && docker build -t order:latest . && cd ..
+cd payment-service && docker build -t payment:latest . && cd ..
+
+# 4. 배포
 kubectl apply -f k8s/
 
-# 개별 서비스 배포
-kubectl apply -f k8s/product-deployment.yaml
-kubectl apply -f k8s/order-deployment.yaml
-kubectl apply -f k8s/payment-deployment.yaml
-kubectl apply -f k8s/service.yaml
-kubectl apply -f k8s/ingress.yaml
-```
-
-### 3. 서비스 확인
-```bash
-# Pod 상태 확인
+# 5. 상태 확인
 kubectl get pods
-
-# 서비스 확인
 kubectl get services
-
-# Ingress 확인
 kubectl get ingress
 ```
 
-### 4. 로컬 접근 (Minikube)
+로컬 접근 설정:
 ```bash
-# Minikube IP 확인
-minikube ip
-
-# Ingress 활성화
-minikube addons enable ingress
-
 # /etc/hosts에 추가
 echo "$(minikube ip) msa.local" | sudo tee -a /etc/hosts
+
+# 접속 테스트
+curl http://msa.local/product
+curl http://msa.local/order
+curl http://msa.local/payment
 ```
 
-## 🧪 Testcontainers 테스트
-
-각 서비스는 Redis 컨테이너를 사용한 Testcontainers 테스트를 포함합니다.
-
+정리:
 ```bash
-# Testcontainers 테스트 실행
-./gradlew :product-service:test --tests "*ContainerTest"
+kubectl delete -f k8s/
+minikube stop
 ```
 
-## 🔧 CI/CD 준비
+## 트러블슈팅
 
-이 템플릿은 다음 CI/CD 파이프라인에 바로 사용 가능합니다:
-
-- **GitHub Actions**
-- **GitLab CI**  
-- **Jenkins**
-- **Azure DevOps**
-
-### GitHub Actions 예시
-```yaml
-name: Build and Deploy
-on: [push]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 21
-      uses: actions/setup-java@v3
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-    - name: Build
-      run: ./gradlew build
-    - name: Test
-      run: ./gradlew test
-```
-
-## 📝 주요 특징
-
-- ✅ **Multi-Module Gradle** 구조
-- ✅ **Kotlin + Spring Boot** 최신 버전
-- ✅ **Testcontainers** 통합 테스트
-- ✅ **Docker** 컨테이너화
-- ✅ **Kubernetes** 오케스트레이션
-- ✅ **CI/CD** 준비 완료
-- ✅ **MSA** 아키텍처
-
-## 🎯 사용 목적
-
-이 템플릿은 다음 목적으로 활용할 수 있습니다:
-
-- MSA 아키텍처 학습
-- Kubernetes 배포 실습
-- DevOps 파이프라인 구축
-- 포트폴리오 프로젝트
-- CI/CD 실습
-
----
+| 증상 | 원인 | 해결 |
+|------|------|------|
+| `Port 8080 is already in use` | 포트 충돌 | `--args='--server.port=808x'` 로 변경 |
+| `Cannot connect to the Docker daemon` | Docker 미실행 | Docker Desktop 실행 |
+| `Could not find a valid Docker environment` | Testcontainers Docker 연결 실패 | Docker Desktop 실행 확인 |
+| `ImagePullBackOff` | Minikube가 로컬 이미지를 찾지 못함 | `eval $(minikube docker-env)` 후 재빌드 |
